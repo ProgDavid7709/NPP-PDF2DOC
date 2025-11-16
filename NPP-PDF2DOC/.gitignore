@@ -1,0 +1,16 @@
+/target/
+# Maven
+target/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+/bin/
