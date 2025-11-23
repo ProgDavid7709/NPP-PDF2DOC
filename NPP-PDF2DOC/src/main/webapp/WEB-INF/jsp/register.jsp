@@ -1,154 +1,214 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký - Dự án Async</title>
-    
-    <!-- CSS được trích xuất từ file "style.css" (PHP MVC) của bạn -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đăng ký - NPP PDF2DOC</title>
+
+    <!-- Shared theme (centralized CSS) -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/theme.css" />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
+        /* Two-column register card (left gradient marketing, right white form) */
+        .page {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 90vh;
-        }
-        h2 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        a {
-            color: #1abc9c;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        a:hover { text-decoration: underline; color: #16a085; }
-        
-        .container {
-             width: 100%;
-             max-width: 450px;
+            /* ensure page centers content vertically; subtract approximate header height so it looks centered on most screens */
+            min-height: calc(100vh - 120px);
+            padding: 32px 16px;
+            box-sizing: border-box;
         }
 
-        form {
-            padding: 30px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        form table {
-             width: 100%;
-             border-spacing: 0 15px; /* Khoảng cách giữa các dòng */
-             border-collapse: separate;
-        }
-        form td {
-             border: none;
-             padding: 0 5px;
-             vertical-align: middle;
-        }
-        form tr td:first-child {
-             font-weight: bold;
-             width: 130px; /* Cố định chiều rộng label (rộng hơn login) */
-        }
-        
-        input[type="text"],
-        input[type="password"],
-        input[type="email"] {
-            width: 100%; /* Chiếm hết 100% thẻ <td> */
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box; /* Quan trọng để padding không làm vỡ layout */
-        }
-        
-        input[type="text"]:focus,
-        input[type="password"]:focus,
-        input[type="email"]:focus {
-             border-color: #1abc9c; /* Viền xanh khi focus */
-             outline: none;
+        .reg-card {
+            width: 900px;
+            max-width: 96%;
+            display: flex;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            background: transparent;
+            /* panels should appear as two adjacent rectangles and match height */
+            align-items: stretch;
         }
 
-        input[type="submit"] {
-            padding: 12px 25px;
+        .reg-card .panel-left {
+            flex: 0 0 360px;
+            padding: 32px;
+            color: #fff;
+            background: linear-gradient(135deg, #f72d23 0%, #ff6a52 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 12px;
+            min-width: 240px;
+        }
+
+        .reg-card .panel-left .logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.15);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:800;
+            color:#fff;
+            font-size:20px;
+        }
+
+        .reg-card .panel-left h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .reg-card .panel-left p {
+            margin: 0;
+            opacity: 0.95;
+            line-height: 1.35;
+        }
+
+        .reg-card .panel-right {
+            flex: 1 1 540px;
+            background: #fff;
+            padding: 28px;
+            box-sizing: border-box;
+        }
+
+        .reg-card .reg-form .field {
+            margin-bottom: 12px;
+        }
+
+        .reg-card .reg-form label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .reg-card .reg-form input {
             width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: box-shadow .16s ease, border-color .16s ease;
+            background: #fff;
+            font-size: 14px;
+        }
+
+        .reg-card .reg-form input:focus {
+            outline: none;
+            border-color: rgba(247,45,35,0.95);
+            box-shadow: 0 0 0 6px rgba(247,45,35,0.08);
+        }
+
+        .reg-card .primary-btn {
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: #f72d23;
+            color: #fff;
             border: none;
-            background-color: #1abc9c;
-            color: white;
             cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+            font-weight: 700;
         }
-        input[type="submit"]:hover { background-color: #16a085; }
-        
-        .link-container {
-            text-align: center;
-            margin-top: 20px;
+
+        .reg-card .link-container {
+            color: #444;
+            font-size: 14px;
         }
-        
-        /* Hiển thị lỗi (nếu có) */
-        .error-message {
-            color: #e74c3c;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
+
+        .card.process {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        @media (max-width: 760px) {
+            .reg-card {
+                flex-direction: column;
+            }
+            .reg-card .panel-left {
+                padding: 20px;
+                text-align: center;
+            }
+            .reg-card .panel-right {
+                padding: 18px;
+            }
         }
     </style>
 </head>
 <body>
+    <%-- shared header (contains UTF-8 directive and fixed header) --%>
+    <jsp:include page="/WEB-INF/jsp/partials/header.jsp" />
 
-    <div class="container">
-        <!-- 
-          Form này (action="/register") sẽ được xử lý bởi RegisterController.java
-          Nó phải dùng method="post".
-        -->
-        <form action="${pageContext.request.contextPath}/register" method="post">
-            <h2>Tạo Tài Khoản Mới</h2>
-            
-            <!-- Hiển thị lỗi (ví dụ: trùng username, sai pass) -->
-            <c:if test="${not empty errorMessage}">
-                <p class="error-message">${errorMessage}</p>
-            </c:if>
-
-            <table>
-                <tr>
-                    <td>Username:</td>
-                    <td><input type="text" name="username" required></td>
-                </tr>
-                 <tr>
-                    <td>Email:</td>
-                    <td><input type="email" name="email" required></td>
-                </tr>
-                <tr>
-                    <td>Password:</td>
-                    <td><input type="password" name="password" required></td>
-                </tr>
-                 <tr>
-                    <td>Xác nhận Pass:</td>
-                    <td><input type="password" name="confirmPassword" required></td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <input type="submit" value="Tạo tài khoản">
-                    </td>
-                </tr>
-            </table>
-            
-            <div class="link-container">
-                Đã có tài khoản? <a href="${pageContext.request.contextPath}/login">Đăng nhập</a>
+    <main class="page" role="main" aria-labelledby="register-heading">
+        <div class="reg-card" role="region" aria-label="Đăng ký tài khoản">
+            <!-- Left: Get started marketing panel -->
+            <div class="panel-left" aria-hidden="false">
+                <h2 id="register-heading" style="margin-top:0;margin-bottom:6px;">Get started</h2>
+                <p class="subtitle" style="margin-top:4px;">Tạo tài khoản để tải lên file PDF, theo dõi tiến trình và lưu lịch sử chuyển đổi trong Dashboard.</p>
             </div>
-        </form>
-    </div>
 
+            <!-- Right: registration form panel -->
+            <div class="panel-right">
+                <c:if test="${not empty infoMessage}">
+                    <div class="muted-small" style="margin-top:12px;">${infoMessage}</div>
+                </c:if>
+                <form class="reg-form" action="${pageContext.request.contextPath}/register" method="post" novalidate>
+                    <c:if test="${not empty errorMessage}">
+                        <div class="reg-form error-message" style="padding:8px;border-radius:8px;background:rgba(247,45,35,0.04);color:#a22017;font-weight:600;margin-bottom:8px;">
+                            ${errorMessage}
+                        </div>
+                    </c:if>
+
+                    <div class="field">
+                        <label for="username">Tên đăng nhập</label>
+                        <input id="username" name="username" type="text" required autocomplete="username" />
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input id="email" name="email" type="email" required autocomplete="email" />
+                    </div>
+
+                    <div class="field">
+                        <label for="password">Mật khẩu</label>
+                        <input id="password" name="password" type="password" required autocomplete="new-password" />
+                    </div>
+
+                    <div class="field">
+                        <label for="confirmPassword">Xác nhận mật khẩu</label>
+                        <input id="confirmPassword" name="confirmPassword" type="password" required autocomplete="new-password" />
+                    </div>
+
+                    <div style="margin-top:6px;">
+                        <button type="submit" class="primary-btn">Tạo tài khoản</button>
+                    </div>
+
+                    <div class="link-container" style="margin-top:12px;">
+                        Đã có tài khoản?
+                        <a href="${pageContext.request.contextPath}/login">Đăng nhập</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Small inline script: focus the first field on page load for convenience -->
+    <script>
+        (function(){
+            try {
+                var el = document.getElementById('username');
+                if (el) el.focus();
+            } catch(e) {
+                // non-critical
+                console && console.log('register page script error', e);
+            }
+        })();
+    </script>
 </body>
 </html>
-
